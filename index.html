@@ -185,6 +185,7 @@ console.log(cStart==-1);
 cEnd=cook.indexOf(";",cStart);
 if(cStart==-1){
 highscore=0;
+document.cookie="highscore=0";
 console.log("New cookie");
 }else{
 highscore=parseInt(cook.substring(cStart+10,cEnd));
