@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>run</title>
+<meta charset="utf-8"/>
+<style>
+#canvas{
+position:fixed;
+left:0px;
+top:0px;
+}
+</style>
+</head>
+<body>
+<div style="display:none">
+<img src="mon_074c.jpg" id="eImg"/>
+<img src="mon_079.gif" id="person"/>
+<img src="ground.png" id="ground"/>
+<img src="play.png" id="player"/>
+<img src="play2.png" id="player2"/>
+</div>
+<canvas id="canvas" width="1200" height="900"></canvas>
+<audio src="jump-anime1.mp3" id="jumpM"/>
+<audio src="bgm_maoudamashii_neorock61.mp3" id="BGM" loop="loop"/>
+<audio src="button26.mp3" id="nice"/>
+<audio src="shock01.mp3" id="gameover"/>
+<script>
+let ctx,y,jump,person,eImg,enemyA,enemyB,timer=NaN,score=0,jumpM,BGM,highscore,nice,a,niceText,result=0,gameover,ground,groundCount,player,player2,canvas,cook,cStart,cEnd;
+onload=function(){
+canvas=document.getElementById("canvas");
+ctx=canvas.getContext("2d");
+eImg=document.getElementById("eImg");
+person=document.getElementById("person");
+jumpM=document.getElementById("jumpM");
+BGM=document.getElementById("BGM");
+highscore=0;
+nice=document.getElementById("nice");
+gameover=document.getElementById("gameover");
+ground=document.getElementById("ground");
+player=document.getElementById("player");
+player2=document.getElementById("player2");
+canvasSize();
+cookieR();
+tellResult();
+}
+function start(){
+canvasSize();
+y=0;
+jump=0;
+score=0;
+a=0;
+niceText=0;
+result=1;
+groundCount=0;
+enemyA=Math.floor(Math.random()*1201)+1200;
+enemyB=Math.floor(Math.random()*1201)+1200;
+BGM.currentTime=0;
+BGM.play();
+gameover.pause();
+if(highscore==0){
+a=1;
+}
+timer=setInterval(re,10);
+}
+function re(){
+enemyA-=5;
+enemyB-=5;
+groundCount-=5;
+score++;
+if(enemyA<-100){
+enemyA=Math.floor(Math.random()*1201)+1100;
+}
+if(enemyB<-100){
+enemyB=Math.floor(Math.random()*1201)+1100;
+}
+if(Math.abs(enemyA-enemyB)<200){
+enemyB+=100;
+}
+y+=jump;
+if(y>0){
+jump-=1/2;
+}else{
+jump=0;
+}
+if(highscore<score){
+if(a==0){                                                          //aa
+a=1;
+nice.pause();
+nice.currentTime=0;
+nice.play();
+niceText=200;
+}
+highscore=score;
+}
+if(groundCount==-1200){
+groundCount=0;
+}
+ctx.fillStyle="black";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+ctx.drawImage(person,canvas.width/2-canvas.width/24,canvas.height/2-canvas.width/24-y*canvas.width/1200,canvas.width/12,canvas.width/12);
+ctx.drawImage(eImg,enemyA*canvas.width/1200,canvas.height/2-canvas.width/24,canvas.width/12,canvas.width/12);
+ctx.drawImage(eImg,enemyB*canvas.width/1200,canvas.height/2-canvas.width/24,canvas.width/12,canvas.width/12);
+for(let f=0;f<7;f++){
+ctx.drawImage(ground,groundCount*canvas.width/1200,canvas.height/2+canvas.width/24+canvas.width/3*f,canvas.width,canvas.width/3);
+ctx.drawImage(ground,groundCount*canvas.width/1200+canvas.width,canvas.height/2+canvas.width/24+canvas.width/3*f,canvas.width,canvas.width/3);
+}
+ctx.fillStyle="white";
+ctx.font=`${canvas.width/24}px sans-serif`;
+ctx.textAlign="left";
+ctx.fillText(`score:${score} highscore:${highscore}`,0,canvas.width/24);
+if(niceText!=0){
+niceText--;
+ctx.fillStyle="red";
+ctx.textAlign="center";
+ctx.font=`${canvas.width/16}px sans-serif`;
+ctx.fillText(`HIGH SCORE`,canvas.width/2,canvas.height/3);
+}
+if(500<enemyA&&600>enemyA&&y<100||500<enemyB&&600>enemyB&&y<100){                         //GAMEOVER
+clearInterval(timer);
+tellResult();
+ctx.fillStyle="red";
+ctx.textAlign="center";
+ctx.font=`${canvas.width/16}px sans-serif`;
+ctx.fillText(`GAMEOVER`,canvas.width/2,canvas.height/3);
+y=null;
+result=0;
+BGM.pause();
+gameover.currentTime=0;
+gameover.play();
+rescoreCookie();
+}
+}
+onmousedown=function(e){
+jumpF();
+if(result==0&&e.pageX>=canvas.width/2-canvas.width/24&&e.pageX<=canvas.width/2+canvas.width/24&&e.pageY>=canvas.height/2-canvas.width/24&&e.pageY<=canvas.height/2+canvas.width/24){
+start();
+}
+}
+function jumpF(){
+if(y==0){
+jump=16;
+jumpM.pause();
+jumpM.currentTime=0;
+jumpM.play();
+}
+}
+function tellResult(){
+ctx.fillStyle="black";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+ctx.drawImage(player,canvas.width/2-canvas.width/24,canvas.height/2-canvas.width/24,canvas.width/12,canvas.width/12);
+ctx.font=`${canvas.width/24}px sans-serif`;
+ctx.textAlign="left";
+ctx.fillStyle="white";
+ctx.fillText(`score:${score} highscore:${highscore}`,0,canvas.width/24);
+}
+window.onmousemove=function(e){
+if(result==0){
+if(e.pageX>=canvas.width/2-canvas.width/24&&e.pageX<=canvas.width/2+canvas.width/24&&e.pageY>=canvas.height/2-canvas.width/24&&e.pageY<=canvas.height/2+canvas.width/24){
+ctx.drawImage(player2,canvas.width/2-canvas.width/24,canvas.height/2-canvas.width/24,canvas.width/12,canvas.width/12);
+}else{
+ctx.drawImage(player,canvas.width/2-canvas.width/24,canvas.height/2-canvas.width/24,canvas.width/12,canvas.width/12);
+}
+}
+}
+function canvasSize(){
+canvas.width=screen.width;
+canvas.height=screen.height;
+}
+onorientationchange=canvasSize;
+ontouchstart=function(e){
+jumpF();
+if(result==0&&e.pageX>=canvas.width/2-canvas.width/24&&e.pageX<=canvas.width/2+canvas.width/24&&e.pageY>=canvas.height/2-canvas.width/24&&e.pageY<=canvas.height/2+canvas.width/24){
+start();
+}
+}
+function rescoreCookie(){
+document.cookie=`highscore=${highscore}`;
+document.cookie="max-age=3600";
+console.log(document.cookie);
+}
+function cookieR(){
+cook=document.cookie;                                         //cookie
+cStart=cook.indexOf("highscore=",0);
+console.log(cStart==-1);
+cEnd=cook.indexOf(";",cStart);
+if(cStart==-1){
+highscore=0;
+console.log("New cookie");
+}else{
+highscore=parseInt(cook.substring(cStart+10,cEnd));
+console.log("Cookie");
+}
+}
+</script>
+</body>
+</html>
