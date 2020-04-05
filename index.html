@@ -163,8 +163,8 @@ ctx.drawImage(player,canvas.width/2-canvas.width/24,canvas.height/2-canvas.width
 }
 }
 function canvasSize(){
-canvas.width=screen.width;
-canvas.height=screen.height;
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
 }
 onorientationchange=canvasSize;
 ontouchstart=function(e){
